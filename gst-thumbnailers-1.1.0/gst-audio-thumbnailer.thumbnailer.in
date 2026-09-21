@@ -1,0 +1,4 @@
+[Thumbnailer Entry]
+TryExec=@BINDIR@/gst-audio-thumbnailer
+Exec=@BINDIR@/gst-audio-thumbnailer --input-uri %u --output %o --size %s
+MimeType=@MIME_TYPES@

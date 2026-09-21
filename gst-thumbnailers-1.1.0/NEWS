@@ -1,0 +1,24 @@
+## 1.1.0
+
+- Update dependencies
+
+## 1.1.alpha
+
+- Update dependencies
+
+## 1.0.0
+
+- Update dependencies
+
+## 1.0.rc
+
+- Check if required GStreamer plugins are available before startup
+
+## 1.0.alpha.3
+
+- First release as official GNOME software.
+- Run tests from `meson test`
+
+## 1.0.alpha.1
+
+First release
