@@ -57,6 +57,12 @@ BuildRequires:  meson >= 1.2
 
 BuildRequires:  pkgconfig(glycin-2) >= 2.0.0
 BuildRequires:  pkgconfig(gstreamer-1.0) >= 1.26.0
+# With vendored crates the generated Rust build requirements are skipped,
+# so the GStreamer libraries used by the Rust code are listed explicitly.
+%if %{with bundled_rust_deps}
+BuildRequires:  pkgconfig(gstreamer-app-1.0)
+BuildRequires:  pkgconfig(gstreamer-video-1.0)
+%endif
 
 # GStreamer plugin dependencies (tests)
 BuildRequires:  gstreamer1-plugins-base
