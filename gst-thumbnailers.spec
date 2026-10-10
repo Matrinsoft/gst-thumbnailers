@@ -8,6 +8,8 @@
 }%{?-e:.%{-e*}}%{?-s:.%{-s*}}%{!?-n:%{?dist}}
 ## END: Set by rpmautospec
 
+%bcond bundled_rust_deps %{defined rhel}
+
 Name:           gst-thumbnailers
 Version:        1.1.0
 Release:        %autorelease
@@ -38,6 +40,13 @@ License:        %{shrink:
 
 URL:            https://gitlab.gnome.org/GNOME/gst-thumbnailers
 Source:         https://download.gnome.org/sources/%{name}/%{gnome_major_minor_version}/%{name}-%{gnome_tarball_version}.tar.xz
+# To create the vendor tarball:
+#   tar Jxvf %{name}-%{gnome_tarball_version}.tar.xz ; \
+#   pushd %{name}-%{gnome_tarball_version} ; \
+#   cargo vendor --versioned-dirs ; \
+#   tar Jcvf ../%{name}-%{gnome_tarball_version}-vendor.tar.xz vendor/ ; \
+#   popd
+Source1:        %{name}-%{gnome_tarball_version}-vendor.tar.xz
 
 Patch:          0001-meson-adapt-for-RPM-package-build-environment.patch
 Patch:          0002-cargo-drop-benchmarks-and-benchmark-only-dependencie.patch
@@ -61,17 +70,27 @@ Requires:       gstreamer1-plugins-good
 %{summary}.
 
 %prep
+%if %{with bundled_rust_deps}
+%autosetup -n gst-thumbnailers-%{gnome_tarball_version} -p1 -a1
+%cargo_prep -v vendor
+%else
 %autosetup -n gst-thumbnailers-%{gnome_tarball_version} -p1
 %cargo_prep
+%endif
 
+%if %{without bundled_rust_deps}
 %generate_buildrequires
 %cargo_generate_buildrequires
+%endif
 
 %build
 %meson
 %meson_build
 %{cargo_license_summary}
 %{cargo_license} > LICENSE.dependencies
+%if %{with bundled_rust_deps}
+%cargo_vendor_manifest
+%endif
 
 %install
 %meson_install
@@ -85,6 +104,9 @@ Requires:       gstreamer1-plugins-good
 %files
 %license LICENSE
 %license LICENSE.dependencies
+%if %{with bundled_rust_deps}
+%license cargo-vendor.txt
+%endif
 %doc README.md
 %doc NEWS
 %{_bindir}/gst-audio-thumbnailer
